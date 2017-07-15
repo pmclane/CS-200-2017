@@ -140,7 +140,7 @@ void Game::SetupLocations()
             locations[i].SetNeighbor( "north",  &locations[i-8] );
         }
 
-        //Eastern neighbor (map is a cylinder, so an else is required.
+        //Eastern neighbor (map is a cylinder, so an else is required).
         if ( (i+1) % 8 != 0)
         {
             locations[i].SetNeighbor( "east",   &locations[i+1] );
@@ -150,7 +150,7 @@ void Game::SetupLocations()
             locations[i].SetNeighbor( "east",   &locations[i-7] );
         }
 
-        //Western neighbor (map is a cylinder, so an else is required.
+        //Western neighbor (map is a cylinder, so an else is required).
         if ( i % 8 != 0)
         {
             locations[i].SetNeighbor( "west",   &locations[i-1] );
