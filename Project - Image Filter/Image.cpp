@@ -1,4 +1,5 @@
 #include "Image.hpp"
+#include <algorithm>
 /// Set the pixelArray to nullptr
 /**
 This is a CONSTRUCTOR function. Constructor functions
@@ -125,22 +126,10 @@ void Image::Filter_Brighten()
 {
     for(int pixel = 0; pixel < pixelCount; pixel++)
     {
-        pixelArray[pixel].r = pixelArray[pixel].r*= 2;
-        pixelArray[pixel].g = pixelArray[pixel].g*= 2;
-        pixelArray[pixel].b = pixelArray[pixel].b*= 2;
+        pixelArray[pixel].r = min( pixelArray[pixel].r * 2, 255 );
+        pixelArray[pixel].g = min( pixelArray[pixel].g * 2, 255 );
+        pixelArray[pixel].b = min( pixelArray[pixel].b * 2, 255 );
 
-        if (pixelArray[pixel].r > 255)
-        {
-            pixelArray[pixel].r = 255;
-        }
-        if (pixelArray[pixel].g > 255)
-        {
-            pixelArray[pixel].g = 255;
-        }
-        if (pixelArray[pixel].b > 255)
-        {
-            pixelArray[pixel].b = 255;
-        }
     }
 }
 
