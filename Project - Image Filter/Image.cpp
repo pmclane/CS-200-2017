@@ -1,5 +1,4 @@
 #include "Image.hpp"
-
 /// Set the pixelArray to nullptr
 /**
 This is a CONSTRUCTOR function. Constructor functions
@@ -130,9 +129,18 @@ void Image::Filter_Brighten()
         pixelArray[pixel].g = pixelArray[pixel].g*= 2;
         pixelArray[pixel].b = pixelArray[pixel].b*= 2;
 
-        max(pixelArray[pixel].r, 255);
-        max(pixelArray[pixel].g, 255);
-        max(pixelArray[pixel].b, 255);
+        if (pixelArray[pixel].r > 255)
+        {
+            pixelArray[pixel].r = 255;
+        }
+        if (pixelArray[pixel].g > 255)
+        {
+            pixelArray[pixel].g = 255;
+        }
+        if (pixelArray[pixel].b > 255)
+        {
+            pixelArray[pixel].b = 255;
+        }
     }
 }
 
@@ -165,70 +173,106 @@ void Image::Filter_Custom()
 {
     for(int pixel = 0; pixel < pixelCount; pixel++)
     {
-        int grayRed = pixelArray[pixel].r * 0.2126;
-        int grayGreen = pixelArray[pixel].g * 0.7152;
-        int grayBlue = pixelArray[pixel].b * 0.0722;
+        int gray = (pixelArray[pixel].r * 0.2126
+                        + pixelArray[pixel].g * 0.7152
+                        + pixelArray[pixel].b * 0.0722);
 
-        pixelArray[pixel].r = (grayRed + grayGreen + grayBlue);
-        pixelArray[pixel].g = (grayRed + grayGreen + grayBlue);
-        pixelArray[pixel].b = (grayRed + grayGreen + grayBlue);
+        pixelArray[pixel].r = gray;
+        pixelArray[pixel].g = gray;
+        pixelArray[pixel].b = gray;
 
     }
 }
 
 void Image::Filter_Custom2()
 {
-    /* Under Construction
+
     for(int pixel = 0; pixel < pixelCount; pixel++)
     {
+        int offset = 0;
+        int row = (pixel - pixel % width)/width;
 
-        if ( pixel/height <= height/3 && pixel%width <= width/3 )
-        {
-            pixelArray[pixel].r = pixelArray[pixel*3].r;
-            pixelArray[pixel].g = pixelArray[pixel*3].g;
-            pixelArray[pixel].b = pixelArray[pixel*3].b;
-        }
-        else if ( pixel/height <= height/3 && pixel%width <= (width/3 * 2) )
-        {
-            int widthAdjst = width/3;
-            pixelArray[pixel].r = 0;
-            pixelArray[pixel].g = pixelArray[pixel-widthAdjst].g;
-            pixelArray[pixel].b = pixelArray[pixel-widthAdjst].b;
-        }
-        else if (pixel/height <= height/3)
-        {
-            int widthAdjst = ( width/3 ) * 2;
-            pixelArray[pixel].r = pixelArray[pixel-widthAdjst].r;
-            pixelArray[pixel].g = 0;
-            pixelArray[pixel].b = pixelArray[pixel-widthAdjst].b;
-        }
-        else if (pixel/height <= (height/3 * 2) && pixel%width <= width/3)
-        {
-            int pixelAdjust = 0;
-            pixelArray[pixel].r = pixelArray[pixel - pixelAdjust].r;
-            pixelArray[pixel].g = pixelArray[pixel - pixelAdjust].g;
-            pixelArray[pixel].b = 0;
-        }/*
-        else if (pixel/height <= (height/3 * 2) && pixel/width <= width/3)
-        {
+        ///Plain
+        if ( ( pixel%width < width/3 && row < height/3))
+            {
+                pixelArray[pixel].r = pixelArray[pixel*3].r;
+                pixelArray[pixel].g = pixelArray[pixel*3].g;
+                pixelArray[pixel].b = pixelArray[pixel*3].b;
+            }
 
-        }
-        else if (pixel/height <= height/3 && pixel/width <= width/3)
-        {
+            ///Remove Red
+            else if ( ( pixel%width < 2*width/3 && row < height/3))
+                {
+                offset = width/3;
+                pixelArray[pixel].r = 0;
+                pixelArray[pixel].g = pixelArray[pixel-offset].g;
+                pixelArray[pixel].b = pixelArray[pixel-offset].b;
+            }
 
-        }
-        else if (pixel/height <= height/3 && pixel/width <= width/3)
-        {
+            ///Remove Green
+            else if ( ( pixel%width < width && row < height/3))
+                {
+                offset = 2*width/3;
+                pixelArray[pixel].r = pixelArray[pixel-offset].r;
+                pixelArray[pixel].g = 0;
+                pixelArray[pixel].b = pixelArray[pixel-offset].b;
+                }
 
-        }
-        else if(pixel/height <= height/3 && pixel/width <= width/3)
-        {
+            ///Remove Blue
+            else if ( ( pixel%width < width/3 && row < 2*height/3) )
+                {
+                offset = width * ((height/3) - 1);
+                pixelArray[pixel].r = pixelArray[pixel-offset].r;
+                pixelArray[pixel].g = pixelArray[pixel-offset].g;
+                pixelArray[pixel].b = 0;
+            }
 
-        }
-        else
-        {
+            ///Grayscale
+            else if ( ( pixel%width < 2*width/3 && row < 2*height/3) )
+                {
+                    offset = width * (height/3);
+                    int gray = (pixelArray[pixel-offset].r * 0.2126
+                            + pixelArray[pixel-offset].g * 0.7152
+                            + pixelArray[pixel-offset].b * 0.0722);
 
-        }*/
+                    pixelArray[pixel].r = gray;
+                    pixelArray[pixel].g = gray;
+                    pixelArray[pixel].b = gray;
+                }
+
+            ///Remove Red and Green
+            else if ( ( pixel%width < width && row < 2*height/3) )
+                {
+                    offset = width * (height/3);
+                    pixelArray[pixel].r = 0;
+                    pixelArray[pixel].g = 0;
+                    pixelArray[pixel].b = pixelArray[pixel-offset].b;
+                }
+
+            ///Remove Green and Blue
+            else if ( ( pixel%width < width/3 && row < height) )
+                {
+                    offset = width * ( 2* height/3);
+                    pixelArray[pixel].r = pixelArray[pixel-offset].r;
+                    pixelArray[pixel].g = 0;
+                    pixelArray[pixel].b = 0;
+                }
+            ///Remove Red and Blue
+            else if ( ( pixel%width < 2*width/3 && row < height) )
+                {
+                    offset = width * ( 2* height/3);
+                    pixelArray[pixel].r = 0;
+                    pixelArray[pixel].g = pixelArray[pixel-offset].g;
+                    pixelArray[pixel].b = 0;
+                }
+            ///Plain
+            else if ( ( pixel%width < width && row < height) )
+                {
+                    offset = width/3 * (( 6* height/3) + 1);
+                    pixelArray[pixel].r = pixelArray[pixel-offset].g;
+                    pixelArray[pixel].g = pixelArray[pixel-offset].b;
+                    pixelArray[pixel].b = pixelArray[pixel-offset].r;
+                }
     }
 
 }
