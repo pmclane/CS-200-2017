@@ -254,7 +254,7 @@ void Image::Filter_Custom2()
                     pixelArray[pixel].g = pixelArray[pixel-offset].g;
                     pixelArray[pixel].b = 0;
                 }
-            ///Plain
+            ///Color Shift
             else if ( ( pixel%width < width && row < height) )
                 {
                     offset = width/3 * (( 6* height/3) + 1);
